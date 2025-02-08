@@ -1,0 +1,416 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Global Styles */
+    .section {
+        padding: 4rem 0;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 3rem;
+        font-size: 2.5rem;
+        color: #2d3748;
+    }
+    
+    .section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+    
+    .btn-custom {
+        background-color: #4a5568;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-custom:hover {
+        background-color: #2d3748;
+    }
+    
+    .btn-danger {
+        background-color: #e53e3e;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background-color: #c53030;
+    }
+
+    .btn-success {
+        background-color: #48bb78;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background-color: #38a169;
+    }
+
+    .section-content {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .form-control {
+        border: 1px solid #e2e8f0;
+        border-radius: 0.375rem;
+        padding: 0.5rem;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    /* Grid Layouts */
+    .grid-layout {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        padding: 1rem;
+    }
+
+    /* Card Styles */
+    .card-item {
+        background: #ffffff;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .card-item:hover {
+        transform: translateY(-5px);
+    }
+
+    /* Tool Card Specific */
+    .tool-card {
+        text-align: center;
+    }
+
+    .tool-card img {
+        max-height: 80px;
+        margin-bottom: 1rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .delete-checkbox {
+        margin-left: auto;
+    }
+</style>
+
+<!-- About Section -->
+<section id="about" class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">About</h2>
+            <button class="btn btn-custom" onclick="toggleSection('about')">Edit About</button>
+        </div>
+
+        <div id="about-content" class="section-content" style="display: none;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Profile Image</label>
+                    <input type="file" name="profile_image" class="form-control" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>About Text</label>
+                    <textarea name="about_text" class="form-control" rows="5" required>{{ about.text }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Update About</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Skills Section -->
+<section id="skills" class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Skills</h2>
+            <div>
+                <button class="btn btn-custom" onclick="toggleSection('skills')">Add Skill</button>
+                <button class="btn btn-danger" onclick="submitDeleteForm('skills')">Delete Selected</button>
+            </div>
+        </div>
+
+        <div id="skills-content" class="section-content" style="display: none;">
+            <form method="post" action="{% url 'skills' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="skill_name" class="form-control" placeholder="Skill Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="number" name="skill_level" class="form-control" placeholder="Skill Level (0-100)" min="0" max="100" required>
+                </div>
+                <button type="submit" class="btn btn-success">Add Skill</button>
+            </form>
+        </div>
+
+        <div class="grid-layout">
+            {% for skill in skills %}
+            <div class="card-item">
+                <div class="skill-header">
+                    <span class="skill-name">{{ skill.name }}</span>
+                    <input type="checkbox" name="skills_to_delete" value="{{ skill.id }}" class="delete-checkbox">
+                </div>
+                <div class="skill-level">
+                    <div class="skill-level-fill" style="width: {{ skill.level }}%"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form id="skills-delete-form" method="post" action="{% url 'delete_skills' %}" style="display: none;">
+            {% csrf_token %}
+            <div id="skills-to-delete"></div>
+        </form>
+    </div>
+</section>
+
+<!-- Projects Section -->
+<section id="projects" class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Projects</h2>
+            <div>
+                <button class="btn btn-custom" onclick="toggleSection('projects')">Add Project</button>
+                <button class="btn btn-danger" onclick="submitDeleteForm('projects')">Delete Selected</button>
+            </div>
+        </div>
+
+        <div id="projects-content" class="section-content" style="display: none;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="project_title" class="form-control" placeholder="Project Title" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="project_description" class="form-control" placeholder="Project Description" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="url" name="project_url" class="form-control" placeholder="Project URL">
+                </div>
+                <div class="form-group">
+                    <label>Project Image</label>
+                    <input type="file" name="project_image" class="form-control" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-success">Add Project</button>
+            </form>
+        </div>
+
+        <div class="grid-layout">
+            {% for project in projects %}
+            <div class="card-item">
+                <div class="project-header">
+                    <h3>{{ project.title }}</h3>
+                    <input type="checkbox" name="projects_to_delete" value="{{ project.id }}" class="delete-checkbox">
+                </div>
+                {% if project.image %}
+                <img src="{{ project.image.url }}" alt="{{ project.title }}" class="project-image">
+                {% endif %}
+                <p>{{ project.description }}</p>
+                {% if project.url %}
+                <a href="{{ project.url }}" target="_blank" class="btn btn-custom">View Project</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <form id="projects-delete-form" method="post" action="{% url 'delete_projects' %}" style="display: none;">
+            {% csrf_token %}
+            <div id="projects-to-delete"></div>
+        </form>
+    </div>
+</section>
+
+<!-- Education Section -->
+<section id="education" class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Education</h2>
+            <div>
+                <button class="btn btn-custom" onclick="toggleSection('education')">Add Education</button>
+                <button class="btn btn-danger" onclick="submitDeleteForm('education')">Delete Selected</button>
+            </div>
+        </div>
+
+        <div id="education-content" class="section-content" style="display: none;">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="degree" class="form-control" placeholder="Degree" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="institution" class="form-control" placeholder="Institution" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="year" class="form-control" placeholder="Year" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="description" class="form-control" placeholder="Description" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Add Education</button>
+            </form>
+        </div>
+
+        <div class="grid-layout">
+            {% for edu in education %}
+            <div class="card-item">
+                <div class="education-header">
+                    <h3>{{ edu.degree }}</h3>
+                    <input type="checkbox" name="education_to_delete" value="{{ edu.id }}" class="delete-checkbox">
+                </div>
+                <h4>{{ edu.institution }}</h4>
+                <p>{{ edu.year }}</p>
+                {% if edu.description %}
+                <p>{{ edu.description }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <form id="education-delete-form" method="post" action="{% url 'delete_education' %}" style="display: none;">
+            {% csrf_token %}
+            <div id="education-to-delete"></div>
+        </form>
+    </div>
+</section>
+
+<!-- Experience Section -->
+<section id="experience" class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Experience</h2>
+            <div>
+                <button class="btn btn-custom" onclick="toggleSection('experience')">Add Experience</button>
+                <button class="btn btn-danger" onclick="submitDeleteForm('experience')">Delete Selected</button>
+            </div>
+        </div>
+
+        <div id="experience-content" class="section-content" style="display: none;">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="position" class="form-control" placeholder="Position" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="company" class="form-control" placeholder="Company" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="duration" class="form-control" placeholder="Duration" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="description" class="form-control" placeholder="Description" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Add Experience</button>
+            </form>
+        </div>
+
+        <div class="grid-layout">
+            {% for exp in experience %}
+            <div class="card-item">
+                <div class="experience-header">
+                    <h3>{{ exp.position }}</h3>
+                    <input type="checkbox" name="experience_to_delete" value="{{ exp.id }}" class="delete-checkbox">
+                </div>
+                <h4>{{ exp.company }}</h4>
+                <p>{{ exp.duration }}</p>
+                {% if exp.description %}
+                <p>{{ exp.description }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <form id="experience-delete-form" method="post" action="{% url 'delete_experience' %}" style="display: none;">
+            {% csrf_token %}
+            <div id="experience-to-delete"></div>
+        </form>
+    </div>
+</section>
+
+<!-- Tools Section -->
+<section id="tools" class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Tools</h2>
+            <div>
+                <button class="btn btn-custom" onclick="toggleSection('tools')">Add Tool</button>
+                <button class="btn btn-danger" onclick="submitDeleteForm('tools')">Delete Selected</button>
+            </div>
+        </div>
+
+        <div id="tools-content" class="section-content" style="display: none;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="text" name="tool_name" class="form-control" placeholder="Tool Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Tool Logo</label>
+                    <input type="file" name="tool_logo" class="form-control" accept="image/*">
+                </div>
+                <button type="submit" class="btn btn-success">Add Tool</button>
+            </form>
+        </div>
+
+        <div class="grid-layout">
+            {% for tool in tools %}
+            <div class="tool-card card-item">
+                <div class="tool-header">
+                    <input type="checkbox" name="tools_to_delete" value="{{ tool.id }}" class="delete-checkbox">
+                </div>
+                {% if tool.logo %}
+                <img src="{{ tool.logo.url }}" alt="{{ tool.name }}" class="tool-logo">
+                {% endif %}
+                <h3>{{ tool.name }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+
+        <form id="tools-delete-form" method="post" action="{% url 'delete_tools' %}" style="display: none;">
+            {% csrf_token %}
+            <div id="tools-to-delete"></div>
+        </form>
+    </div>
+</section>
+
+<script>
+    function toggleSection(sectionName) {
+        const content = document.getElementById(sectionName + '-content');
+        content.style.display = content.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function submitDeleteForm(sectionName) {
+        const form = document.getElementById(sectionName + '-delete-form');
+        const checkboxes = document.querySelectorAll(`input[name="${sectionName}_to_delete"]:checked`);
+        const deleteDiv = document.getElementById(sectionName + '-to-delete');
+
+        deleteDiv.innerHTML = '';
+        checkboxes.forEach(checkbox => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'items_to_delete';
+            input.value = checkbox.value;
+            deleteDiv.appendChild(input);
+        });
+
+        if (checkboxes.length > 0) {
+            form.submit();
+        }
+    }
+</script>
+{% endblock %}

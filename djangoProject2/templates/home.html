@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h2 class="animate-text">HELLO!</h2>
+        <h1 class="animate-text-delay">I'm a <span class="highlight">AI Engineer</span><br>passionate about Data Science</h1>
+        <div class="cta-buttons animate-fade-in">
+            <a href="#projects" class="btn primary">VIEW MY WORK</a>
+            <a href="#contact" class="btn secondary">CONTACT ME</a>
+            <a href="{% static 'Anum_cv.pdf' %}" download class="btn download">
+                <i class="fas fa-download"></i> Download CV
+            </a>
+        </div>
+    </div>
+</section>
+<!-- About Section -->
+<section id="about" class="section">
+    <div class="container">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-grid">
+            <div class="about-image">
+                <img src="{% static 'anum.jpeg' %}" alt="Anum Saleem" class="profile-img">
+            </div>
+            <div class="about-content">
+                <p>I am Anum Saleem, a dedicated and driven individual with a profound passion for coding, data science, and web development. My journey in technology is fueled by an insatiable curiosity and a commitment to continuous learning.</p>
+                <p>My experience spans various domains, including developing dynamic and responsive web applications, creating robust machine learning models, and exploring the intricacies of deep learning.</p>
+                <p>Beyond the technical skills, I bring a problem-solving mindset and a deep enthusiasm for exploring new technologies.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Skills Section -->
+<section id="skills" class="section">
+    <div class="container">
+        <h2 class="section-title">Skills</h2>
+        <div class="skills-grid">
+            {% for skill in skills %}
+            <div class="skill-item">
+                <span class="skill-name">{{ skill.name }}</span>
+                {% if skill.level %}
+                <div class="skill-level" style="width: {{ skill.level }}%"></div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Projects Section -->
+<section id="projects" class="section">
+    <div class="container">
+        <h2 class="section-title">Projects</h2>
+        <div class="projects-grid">
+            {% for project in projects %}
+            <div class="project-card">
+                {% if project.image %}
+                <div class="project-image">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}">
+                </div>
+                {% endif %}
+                <div class="project-content">
+                    <h3 class="project-title">{{ project.title }}</h3>
+                    <p class="project-description">{{ project.description }}</p>
+                    {% if project.url %}
+                    <a href="{{ project.url }}" class="project-link" target="_blank">View Project</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Education Section -->
+<section id="education" class="section">
+    <div class="container">
+        <h2 class="section-title">Education</h2>
+        <div class="timeline">
+            {% for edu in education %}
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">{{ edu.title }}</h3>
+                    <p class="timeline-info">{{ edu.description }}</p>
+                    <span class="timeline-year">{{ edu.year }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Experience Section -->
+<section id="experience" class="section">
+    <div class="container">
+        <h2 class="section-title">Experience</h2>
+        <div class="timeline">
+            {% for exp in experience %}
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">{{ exp.position }}</h3>
+                    <h4 class="timeline-subtitle">{{ exp.company }}</h4>
+                    <p class="timeline-info">{{ exp.description }}</p>
+                    <span class="timeline-duration">{{ exp.duration }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Certifications Section -->
+<section id="certifications" class="section">
+    <div class="container">
+        <h2 class="section-title">Certifications</h2>
+        <div class="certifications-grid">
+            {% for cert in certifications %}
+            <div class="certification-card">
+                <h3 class="certification-title">{{ cert.title }}</h3>
+                <p class="certification-description">{{ cert.description }}</p>
+                {% if cert.url %}
+                <a href="{{ cert.url }}" class="certification-link" target="_blank">View Certificate</a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Tools Section -->
+<section id="tools" class="section">
+    <div class="container">
+        <h2 class="section-title">Tools</h2>
+        <div class="tools-grid">
+            {% for tool in tools %}
+            <div class="tool-card">
+                {% if tool.logo %}
+                <img src="{{ tool.logo.url }}" alt="{{ tool.name }}" class="tool-logo">
+                {% endif %}
+                <h3 class="tool-name">{{ tool.name }}</h3>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<!-- Updated Contact Section -->
+<section id="contact" class="section contact-section">
+    <div class="container">
+        <header class="contact-header">
+            <h2 class="section-title">Contact Me</h2>
+            <p class="contact-subtitle">Contact me here!</p>
+        </header>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <div class="info-item">
+                    <div class="icon-container">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>ADDRESS</h3>
+                        <p>Near UMT, Lahore</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="icon-container">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>CONTACT NUMBER</h3>
+                        <p>+92 3116580619</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="icon-container">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>EMAIL ADDRESS</h3>
+                        <p>anum.saleem2004@gmail.com</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="icon-container">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>WEBSITE</h3>
+                        <p><a>www.yourwebsite.com</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form">
+                <form id="contactForm">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" class="form-control" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Subject" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" placeholder="Message" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        Send Message
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
